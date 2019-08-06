@@ -1,0 +1,43 @@
+.pinned_cell {
+    position: fixed;
+    z-index: 9999;
+    left: 72px;
+    width: 295px;
+    height: 52px;
+}
+
+.table_cell:hover {
+    background-color: #e8eff2;
+}
+
+.header_cell:hover {
+    background-color: #6f97db;
+}
+
+div[role=dialog] div[role=document] :first-child {
+    max-width: 100% !important;
+    flex: 1 !important;
+}
+
+tr {
+    border-radius: 4px !important;
+}
+
+tbody {
+    display: block !important;
+    /* max-height: 1138px !important; */
+    /* overflow-y: scroll; */
+}
+
+.table-head {
+    position: relative;
+}
+
+.table-body {
+    /* overflow: auto; */
+}
+
+.disabled {
+    cursor: no-drop !important;
+    color: #6c757d !important;
+}
