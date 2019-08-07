@@ -9,7 +9,10 @@ import PropTypes from 'prop-types';
 import PinnedTable from './PinnedTable';
 import DialogTable from './DialogTable';
 
-import { updatePinned } from '../../actions/table';
+import {
+    updatePinned,
+    updateHeaders,
+} from '../../actions/table';
 
 const {
     Rows,
@@ -41,17 +44,19 @@ class Table extends Component {
     }
 
     isPinned = (e) => {
-        const { pinned = [], maxPinnedcols, headers } = this.state;
+        const { maxPinnedcols, headers } = this.state;
+        const { pinned = [] } = this.props.table;
         let newPinned = pinned.map(o => o);
-        if (newPinned.includes(e.currentTarget.getAttribute('name'))) {
-            newPinned = newPinned.filter(one => one != e.currentTarget.getAttribute('name'))
+        const name = e.currentTarget.getAttribute('name');
+        if (newPinned.includes(name)) {
+            newPinned = newPinned.filter(one => one != name)
         } else {
-            newPinned.push(e.currentTarget.getAttribute('name'));
+            newPinned.push(name);
         }
         if (Array.isArray(newPinned) && newPinned.length > maxPinnedcols) return;
         this.setState({ pinned: newPinned }, () => {
             const pinnedHeaders = Array.isArray(newPinned) && headers.filter(one => newPinned.includes(one.value));
-            this.props.updatePinned(newPinned);
+            this.props.updatePinned([...newPinned]);
             this.setState({ pinnedHeaders });
         });
     }
@@ -67,9 +72,9 @@ class Table extends Component {
         this.setState({ checked });
     }
 
-    getHeaders = (tableCols, days = [], order = '') => {
-		const { exclude } = this.props;
-        const { pinned } = this.state;
+    getHeaders = () => {
+        const { days, order, headers: tableCols } = this.props.Data;
+        const { pinned = [], excludeHeaders: exclude } = this.props.table;
         if(tableCols.length > 0) {
             const headers = tableCols.filter(({ name, value }) => {
 				if (Array.isArray(pinned) && pinned.includes(value)) return false;
@@ -146,17 +151,16 @@ class Table extends Component {
 
     render() {
         const {
-            pinned, headers,
+            pinned,
             rows, checked,
             pinnedHeaders,
             compareRows,
             showCmpDialog,
             sortedCol,
-            Table,
             headerCheck,
         } = this.state;
-        const { days = [], hasPinnedColumns } = this.props;
-        const filteredHeaders = this.getHeaders(headers, days);
+        const { hasPinnedColumns } = this.props;
+        const filteredHeaders = this.getHeaders();
         const compareHeaders = Array.isArray(filteredHeaders) && Array.isArray(pinnedHeaders) ? filteredHeaders.concat(pinnedHeaders) : [];
         return (
             <Fragment>
@@ -217,10 +221,12 @@ Table.propTypes = {
  
 const mapStateToProps = (state) => ({
     Data: state.GetAllData,
+    table: state.table,
 })
 
 const dispatchToProps = {
-    updatePinned
+    updatePinned,
+    updateHeaders
 };
 
 export default connect(mapStateToProps, dispatchToProps)(Table);

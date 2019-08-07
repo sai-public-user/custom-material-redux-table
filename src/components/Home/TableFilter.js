@@ -1,4 +1,5 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, Component } from 'react';
+import { connect } from 'react-redux';
 import * as Styles from '../../common/Table/SharedStyles';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -9,6 +10,14 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
+
+import {
+  updateHeaders,
+} from '../../actions/table';
+
+import {
+  manageDays,
+} from '../../actions/getAllData';
 
 const BootstrapInput = withStyles(theme => ({
   input: {
@@ -65,22 +74,62 @@ const {
   SelectFileType,
 } = Styles.default;
 
-function TableFilter(props) {
-	const {
-		classes = {},
-		filterType,
-		toggleTableFilter,
-		days,
-		handleSwitchChange,
-		filterLeft,
-		filterRight,
-		filterHeaderClick,
-		pinned,
-    exHeadersNames,
-    fileType,
-    onFileTypeChange,
-    isDownload = false,
-	} = props || {};
+class TableFilter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  filterHeaderClick = ({ currentTarget } = {}) => {
+    let name = currentTarget.getAttribute('name');
+    let { excludeHeaders = [], exHeadersNames = [] } = this.props.table;
+    let {  days = [], pinned = [] } = this.props.Data;
+    if (name !== null) {
+      if (name === 'Select All') {
+        if (excludeHeaders.includes('select_all')) {
+          excludeHeaders = this.getFilterHeaders();
+          excludeHeaders = excludeHeaders.map(one => one.toLowerCase().replace(/ /g, '_'));
+          exHeadersNames = this.getFilterHeaders();
+          days = [];
+        } else {
+          excludeHeaders = ['select_all'];
+          exHeadersNames = ['Select All'];
+          // days = [ 'Retail Order', '30 Days', 'Mail Order', '90 Days' ];
+        }
+        this.props.updateHeaders({ excludeHeaders, exHeadersNames });
+        this.props.manageDays(days);
+        return this.setState({ excludeHeaders, exHeadersNames, days });
+      }
+      if (pinned.includes(name.toLowerCase().replace(/ /g,'_'))) return;
+      if (exHeadersNames.includes(name)) exHeadersNames = exHeadersNames.filter(one => one !== name);
+      else exHeadersNames.push(name.trim());
+      if(name.indexOf('Preferred Tier ') > -1) name = name.replace('Preferred Tier ', 'PT:');
+      else if(name.indexOf('Standard Tier ') > -1) name = name.replace('Standard Tier ', 'ST:');
+      else name = name.toLowerCase().replace(/ /g, '_');
+      if (excludeHeaders.includes(name)) excludeHeaders = excludeHeaders.filter(one => one !== name);
+      else excludeHeaders.push(name.trim());
+      this.props.updateHeaders({ excludeHeaders, exHeadersNames });
+      this.setState({ excludeHeaders, exHeadersNames });
+    }
+  }
+
+  render() { 
+    const {
+      classes = {},
+      filterType,
+      toggleTableFilter,
+      handleSwitchChange,
+      filterLeft,
+      filterRight,
+      pinned,
+      fileType,
+      onFileTypeChange,
+      isDownload = false,
+    } = this.props || {};
+
+    const { days = [] } = this.props.Data;
+    const { exHeadersNames = [] } = this.props.table;
+
     return (
       <SwipeableDrawer
         anchor="right"
@@ -184,11 +233,11 @@ function TableFilter(props) {
                 <Paper style={{ padding: '0.5rem', marginTop: 10, width: '15.5vw' }}>
                   {
                     <Fragment>
-                      <FilterCell name="Select All" onClick={filterHeaderClick}>
+                      <FilterCell name="Select All" onClick={this.filterHeaderClick}>
                         <div>{!exHeadersNames.includes('Select All') ? 'Select All' : 'Deselect All'}</div>
                       </FilterCell>
                       {Array.isArray(filterLeft) && filterLeft.map(name =>
-                        <FilterCell name={name} onClick={filterHeaderClick} style={{ color: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '#777': 'black'}`, cursor: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '' : 'pointer'}` }}>
+                        <FilterCell name={name} onClick={this.filterHeaderClick} style={{ color: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '#777': 'black'}`, cursor: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '' : 'pointer'}` }}>
                           <div>{name}</div>
                           {!exHeadersNames.includes(name) &&
                           <HeaderCheck>
@@ -202,7 +251,7 @@ function TableFilter(props) {
                 <Paper style={{ padding: '0.5rem', marginTop: 10, width: '15.5vw' }}>
                   {
                     Array.isArray(filterRight) && filterRight.map(name => 
-                      <FilterCell name={`${Array.isArray(days) && days.length < 2 ? null : name}`} onClick={filterHeaderClick} className={`${Array.isArray(days) && days.length < 2 ? 'disabled' : ''}`} style={{ color: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '#777': 'black'}`, cursor: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '' : 'pointer'}` }}>
+                      <FilterCell name={`${Array.isArray(days) && days.length < 2 ? null : name}`} onClick={this.filterHeaderClick} className={`${Array.isArray(days) && days.length < 2 ? 'disabled' : ''}`} style={{ color: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '#777': 'black'}`, cursor: `${pinned.includes(name.toLowerCase().replace(/ /g,'_')) ? '' : 'pointer'}` }}>
                         <div>{name}</div>
                           {!exHeadersNames.includes(name) && (Array.isArray(days) && days.length >= 2) &&
                           <HeaderCheck>
@@ -223,6 +272,16 @@ function TableFilter(props) {
         </FilterContent>
       </SwipeableDrawer>
     );
+  }
 }
 
-export default withStyles(styles)(TableFilter);
+const mapStateToProps = (state) => ({
+  Data: state.GetAllData,
+  table: state.table,
+})
+
+const dispatchToProps = {
+  updateHeaders,
+};
+
+export default connect(mapStateToProps, dispatchToProps) (withStyles(styles)(TableFilter));

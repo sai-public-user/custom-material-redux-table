@@ -1,7 +1,8 @@
 import { 
   REQUEST_UPDATE_DAYS,
   SUCCESS_UPDATE_DAYS,
-  ERROR_UPDATE_DAYS,
+  REQUEST_UPDATE_SwitchData,
+  SUCCESS_UPDATE_SwitchData,
 } from '../actionTypes';
 
 const row = {
@@ -125,6 +126,7 @@ const initalState = {
     ],
     rows,
     days: [ 'Retail Order', '30 Days' ],
+    order: '',
     maxPin: 5,
     maxCompare: 5,
 };
@@ -145,12 +147,17 @@ const getAllData = (state = initalState, action) => {
         error: null,
         days: payload,
       };
-    case ERROR_UPDATE_DAYS:
+    case REQUEST_UPDATE_SwitchData:
+      return {
+        ...state,
+        loading: true,
+      };
+    case SUCCESS_UPDATE_SwitchData:
       return {
         ...state,
         loading: false,
-        error: payload.error,
-      };
+        order: payload,
+      }
     default:
       return state;
   }

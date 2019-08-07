@@ -26,7 +26,7 @@ function Row(props) {
               </RowCheckbox>
             ) : null}
             {row && row !== null && Array.isArray(headerVals) && headerVals.map((keyVal, i) => (
-              <Cell data={row[keyVal]} title={keyVal} isPinnedVal={pinned.includes(keyVal)} name={keyVal} endPosition={ i === 0 || i === headerVals.length - 1 ? i : -1 } />
+              <Cell data={row[keyVal]} title={row[keyVal]} isPinnedVal={pinned.includes(keyVal)} name={keyVal} endPosition={ i === 0 || i === headerVals.length - 1 ? i : -1 } />
             ))}
         </TableRow>
     );
