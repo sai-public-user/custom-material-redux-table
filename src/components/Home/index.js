@@ -42,14 +42,6 @@ class Home extends Component {
         this.props.manageSwitchData('');
     }
 
-
-    toggleTableFilter = (filterType, isDownload) => {
-      this.setState({
-        filterType,
-        isDownload,
-      });
-    };
-
     getFilterHeaders = () => {
       let filterHeaderNames = [];
       const { Data: { headers }, table: { pinned = [] } } = this.props;
@@ -71,38 +63,15 @@ class Home extends Component {
     }
 
     render() {
-        const {
-          filterType,
-          exHeadersNames, fileType,
-          isDownload,
-        } = this.state;
-        const { Data: { days, order }, table: { pinned = [] } } = this.props;
-        const filterHeaderNames = this.getFilterHeaders();
-        let filterLeft = filterHeaderNames.map(one=>one);
-        filterLeft = filterHeaderNames.length > 10 && filterLeft.splice(0,10);
-        let filterRight = filterHeaderNames.map(one=>one);
-        filterRight = filterHeaderNames.length > 10 && filterRight.splice(10);
         return (
             <Fragment>
-              <PageHeader onSwitchChange={this.handleSwitchChange} days={days} onTableToggle={this.toggleTableFilter} />
+              <PageHeader onTableToggle={this.toggleTableFilter} />
               <MaindataContainer>
                 <TableContainer>
-                  <Table hasPinnedColumns order={order} />
+                  <Table hasPinnedColumns order={''} />
                 </TableContainer>
               </MaindataContainer>
-              <TableFilter
-                filterType={filterType}
-                filterLeft={filterLeft}
-                filterRight={filterRight}
-                handleSwitchChange={this.handleSwitchChange}
-                toggleTableFilter={this.toggleTableFilter}
-                filterHeaderClick={this.filterHeaderClick}
-                pinned={pinned}
-                exHeadersNames={exHeadersNames}
-                fileType={fileType}
-                isDownload={isDownload}
-                onFileTypeChange={this.onFileTypeChange}
-              />
+              <TableFilter />
             </Fragment>
         );
     }

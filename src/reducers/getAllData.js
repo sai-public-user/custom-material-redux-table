@@ -3,6 +3,7 @@ import {
   SUCCESS_UPDATE_DAYS,
   REQUEST_UPDATE_SwitchData,
   SUCCESS_UPDATE_SwitchData,
+  TOGGLE_TABLE_FILTER,
 } from '../actionTypes';
 
 const row = {
@@ -129,6 +130,8 @@ const initalState = {
     order: '',
     maxPin: 5,
     maxCompare: 5,
+    filterType: '',
+    isDownload: false,
 };
 
 const getAllData = (state = initalState, action) => {
@@ -157,6 +160,12 @@ const getAllData = (state = initalState, action) => {
         ...state,
         loading: false,
         order: payload,
+      }
+    case TOGGLE_TABLE_FILTER:
+      return {
+        ...state,
+        filterType: payload.filterType,
+        isDownload: payload.isDownload,
       }
     default:
       return state;

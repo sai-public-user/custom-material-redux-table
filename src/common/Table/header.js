@@ -52,7 +52,7 @@ function Header(props) {
                         }
                         {name.indexOf('Mail Order') === -1 && name.indexOf('Retail Order') === -1 && (<Headername>{name}</Headername>)}
                         {hasPinnedColumns && (<HeaderPin className={`${pinned.includes(value) ? 'text-info' : ''}`} name={value} onClick={isPinned}><i className="fa fa-thumb-tack" name="pin_value" aria-hidden="true" /></HeaderPin>)}
-                        {sortedCol && sortedCol[value] && <SortIcon name={value}>{(sortedCol[value] === 'asc' ? <i class="fa fa-arrow-up" /> : <i class="fa fa-arrow-down" />)}</SortIcon>}
+                        {sortedCol && sortedCol[value] && <SortIcon name={value}>{(sortedCol[value] === 'asc' ? <i className="fa fa-arrow-up" /> : <i className="fa fa-arrow-down" />)}</SortIcon>}
                     </HeaderCell>
                 );
             })}

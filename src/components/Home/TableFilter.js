@@ -17,6 +17,8 @@ import {
 
 import {
   manageDays,
+  manageSwitchData,
+  toggleTableFilter,
 } from '../../actions/getAllData';
 
 const BootstrapInput = withStyles(theme => ({
@@ -77,7 +79,10 @@ const {
 class TableFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      filterType: '',
+      isDownload: false,
+    };
   }
 
   filterHeaderClick = ({ currentTarget } = {}) => {
@@ -113,62 +118,97 @@ class TableFilter extends Component {
     }
   }
 
+  onFileTypeChange = ({ target: { value } }) => {
+    console.log(value);
+  }
+
+  handleSwitchChange = ({ target: { value } }) => {
+      let { days = [] } = this.props.Data;
+      if (days.includes(value)) {
+          days = days.filter(one => one !== value)
+      } else {
+          days.push(value);
+      }
+      this.props.manageDays(days);
+      this.props.manageSwitchData('');
+  }
+
+  getFilterHeaders = () => {
+    let filterHeaderNames = [];
+    const { Data: { headers }, table: { pinned = [] } } = this.props;
+    const filterHeaders = headers.filter(({ name, value }) => {
+      if (name.indexOf(' - ') > -1) {
+        const tierType = (name.split(' - ')[1]).replace('30 Days', '').replace('90 Days', '');
+        if (filterHeaderNames.includes(tierType.trim())) return false;
+        else filterHeaderNames.push(tierType.trim());
+        return true;
+      } else filterHeaderNames.push(name); 
+      return true;
+    });
+    return JSON.parse(JSON.stringify(filterHeaderNames).replace(/PT:/g, 'Preferred Tier ').replace(/ST:/g, 'Standard Tier '));
+  }
+
+  onDownloadClick() {
+    console.log(this);
+    this.setState({ isDownload: !this.state.isDownload });
+  }
+
   render() { 
     const {
       classes = {},
-      filterType,
-      toggleTableFilter,
-      handleSwitchChange,
-      filterLeft,
-      filterRight,
-      pinned,
       fileType,
-      onFileTypeChange,
-      isDownload = false,
     } = this.props || {};
 
-    const { days = [] } = this.props.Data;
     const { exHeadersNames = [] } = this.props.table;
+
+    const { Data: { days, order, isDownload, filterType }, table: { pinned = [] } } = this.props;
+    const filterHeaderNames = this.getFilterHeaders();
+    let filterLeft = filterHeaderNames.map(one=>one);
+    filterLeft = filterHeaderNames.length > 10 && filterLeft.splice(0,10);
+    let filterRight = filterHeaderNames.map(one=>one);
+    filterRight = filterHeaderNames.length > 10 && filterRight.splice(10);
 
     return (
       <SwipeableDrawer
         anchor="right"
         open={filterType !== ''}
-        onClose={() => toggleTableFilter('')}
+        onClose={() => this.props.toggleTableFilter('')}
       >
         <FilterContent>
           {filterType === 'column' && (
             <FilterContentBlock>
-              {isDownload && (<SelectFileType>
-                <Select
-                  value={fileType}
-                  onChange={onFileTypeChange}
-                  input={<BootstrapInput name="fileType" id="file-customized-select" />}
-                >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value="EXCEL">
-                    <FilterFileType>
-                      <div>EXCEL</div>
-                      <HeaderCheck><i className="fa fa-check" aria-hidden="true" /></HeaderCheck>
-                    </FilterFileType>
-                  </MenuItem>
-                  <MenuItem value="CSV">
-                    <FilterFileType>
-                      <div>CSV</div>
-                      <HeaderCheck><i className="fa fa-check" aria-hidden="true" /></HeaderCheck>
-                    </FilterFileType>
-                  </MenuItem>
-                </Select>
-              </SelectFileType>)}
+              {isDownload && (
+                <SelectFileType>
+                  <Select
+                    value={fileType}
+                    onChange={this.onFileTypeChange}
+                    input={<BootstrapInput name="fileType" id="file-customized-select" />}
+                  >
+                    <MenuItem value="">
+                      <em>None</em>
+                    </MenuItem>
+                    <MenuItem value="EXCEL">
+                      <FilterFileType>
+                        <div>EXCEL</div>
+                        <HeaderCheck><i className="fa fa-check" aria-hidden="true" /></HeaderCheck>
+                      </FilterFileType>
+                    </MenuItem>
+                    <MenuItem value="CSV">
+                      <FilterFileType>
+                        <div>CSV</div>
+                        <HeaderCheck><i className="fa fa-check" aria-hidden="true" /></HeaderCheck>
+                      </FilterFileType>
+                    </MenuItem>
+                  </Select>
+                </SelectFileType>
+              )}
               <FormGroup row>
                 <FormGroup column>
                     <FormControlLabel
                       control={
                         <Switch
                           checked={days.includes("30 Days")}
-                          onChange={handleSwitchChange}
+                          onChange={this.handleSwitchChange}
                           value="30 Days"
                           classes={{
                             switchBase: classes.colorSwitchBase,
@@ -183,7 +223,7 @@ class TableFilter extends Component {
                       control={
                         <Switch
                           checked={days.includes("90 Days")}
-                          onChange={handleSwitchChange}
+                          onChange={this.handleSwitchChange}
                           value="90 Days"
                           classes={{
                             switchBase: classes.colorSwitchBase,
@@ -200,7 +240,7 @@ class TableFilter extends Component {
                       control={
                         <Switch
                           checked={days.includes("Mail Order")}
-                          onChange={handleSwitchChange}
+                          onChange={this.handleSwitchChange}
                           value="Mail Order"
                           classes={{
                             switchBase: classes.colorSwitchBase,
@@ -215,7 +255,7 @@ class TableFilter extends Component {
                       control={
                         <Switch
                           checked={days.includes("Retail Order")}
-                          onChange={handleSwitchChange}
+                          onChange={this.handleSwitchChange}
                           value="Retail Order"
                           classes={{
                             switchBase: classes.colorSwitchBase,
@@ -282,6 +322,9 @@ const mapStateToProps = (state) => ({
 
 const dispatchToProps = {
   updateHeaders,
+  manageDays,
+  manageSwitchData,
+  toggleTableFilter,
 };
 
 export default connect(mapStateToProps, dispatchToProps) (withStyles(styles)(TableFilter));

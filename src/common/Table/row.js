@@ -17,7 +17,7 @@ function Row(props) {
         checked = [], checkBoxChange, pinnedRow,
         name, noCompare,
     } = props;
-    const headerVals = Array.isArray(headers) && headers.map(({ value ='' }) => value) || [];
+    const headerVals = Array.isArray(headers) && headers.map(({ value ='' }, inx) => value) || [];
     return (
         <TableRow>
             {(Array.isArray(pinned) && pinned.length > 0 && pinnedRow) || (!pinnedRow && Array.isArray(pinned) && pinned.length === 0) && !noCompare ? (
@@ -26,7 +26,7 @@ function Row(props) {
               </RowCheckbox>
             ) : null}
             {row && row !== null && Array.isArray(headerVals) && headerVals.map((keyVal, i) => (
-              <Cell data={row[keyVal]} title={row[keyVal]} isPinnedVal={pinned.includes(keyVal)} name={keyVal} endPosition={ i === 0 || i === headerVals.length - 1 ? i : -1 } />
+              <Cell data={row[keyVal]} key={i} title={row[keyVal].toString()} isPinnedVal={pinned.includes(keyVal)} name={keyVal} endPosition={ i === 0 || i === headerVals.length - 1 ? i : -1 } />
             ))}
         </TableRow>
     );

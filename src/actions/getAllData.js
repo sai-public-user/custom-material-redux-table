@@ -3,6 +3,7 @@ import {
     SUCCESS_UPDATE_DAYS,
     REQUEST_UPDATE_SwitchData,
     SUCCESS_UPDATE_SwitchData,
+    TOGGLE_TABLE_FILTER,
 } from '../actionTypes';
 
 const manageDays = data => (dispatch) => {
@@ -22,5 +23,16 @@ const manageSwitchData = data => (dispatch) => {
     dispatch({ type: SUCCESS_UPDATE_SwitchData, payload: data });
 };
 
+const toggleTableFilter = (filterType, isDownload) => (dispatch) => {
+    dispatch({ type: TOGGLE_TABLE_FILTER, payload: {
+        filterType,
+        isDownload,
+    }});
+}
 
-export { manageDays, manageSwitchData };
+
+export {
+    manageDays,
+    manageSwitchData,
+    toggleTableFilter,
+};
