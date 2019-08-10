@@ -158,6 +158,7 @@ class Table extends Component {
             showCmpDialog,
             sortedCol,
             headerCheck,
+            headers,
         } = this.state;
         const { hasPinnedColumns } = this.props;
         const filteredHeaders = this.getHeaders();
@@ -186,7 +187,7 @@ class Table extends Component {
                     <Fragment className="table-head">
                         <CustomTable>
                             <HeaderData>
-                                <Header sortedCol={sortedCol} checkBoxChange={this.headerCheckBoxChange} checkBox={headerCheck} onCellClick={this.onCellClick} headers={filteredHeaders} compare={this.compareClicked} hasPinnedColumns pinned={pinned} isPinned={this.isPinned} />
+                                <Header sortedCol={sortedCol} checkBoxChange={this.headerCheckBoxChange} checkBox={headerCheck} onCellClick={this.onCellClick} headers={filteredHeaders} compare={this.compareClicked} hasPinnedColumns={hasPinnedColumns} pinned={pinned} isPinned={this.isPinned} />
                             </HeaderData>
                         </CustomTable>
                     </Fragment>
@@ -204,7 +205,8 @@ class Table extends Component {
                     showCmpDialog={showCmpDialog}
                     closeDialog={this.closeDialog}
                     compareRows={compareRows}
-                    compareHeaders={compareHeaders}
+                    //compareHeaders
+                    compareHeaders={headers}
                 />
             </Fragment>
         );

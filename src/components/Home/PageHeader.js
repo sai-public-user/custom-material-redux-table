@@ -90,6 +90,7 @@ class PageHeader extends Component {
               </FormGroup>
               <TableFilterIcon onClick={() => this.props.toggleTableFilter('column', false)}><i className="fa fa-table fa-lg" aria-hidden="true" /></TableFilterIcon>
               <TableFilterIcon onClick={() => this.props.toggleTableFilter('column', true)}><i className="fa fa-download" aria-hidden="true" /></TableFilterIcon>
+              <TableFilterIcon onClick={() => this.props.toggleTableFilter('search', false)}><i className="fa fa-search" aria-hidden="true" /></TableFilterIcon>
           </TableFilters>
       </Header>
     );

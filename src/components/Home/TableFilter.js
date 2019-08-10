@@ -10,6 +10,9 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import InputBase from '@material-ui/core/InputBase';
+import Button from '@material-ui/core/Button';
+
+import Search from './search';
 
 import {
   updateHeaders,
@@ -304,10 +307,14 @@ class TableFilter extends Component {
               </FilterHeaderPaper>
             </FilterContentBlock>
           )}
+          {isDownload && (
+            <Fragment>
+              <Button variant="contained" color="primary">Export</Button>
+              <Button variant="contained" color="secondary">Cancel</Button>
+            </Fragment>
+          )}
           {filterType === 'search' && (
-            <FilterContentBlock>
-              data comes here
-            </FilterContentBlock>
+            <Search />
           )}
         </FilterContent>
       </SwipeableDrawer>

@@ -40,6 +40,7 @@ function Header(props) {
             }
             {headers.map(col => {
                 const { name = '', value = '' } = col;
+                console.log(hasPinnedColumns);
                 return (
                     <HeaderCell key={value} name={name} onClick={(e) => onCellClick ? onCellClick(value, e) : null}>
                         {name.indexOf('Mail Order') !== -1 || name.indexOf('Retail Order') !== -1 ? (
